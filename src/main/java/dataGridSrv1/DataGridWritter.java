@@ -83,7 +83,6 @@ public class DataGridWritter {
 
 				Prenda pPrenda = calculoPrenda("" + i);
 
-
 				if (!prendas.contains(pPrenda)) {
 					prendas.add(pPrenda);
 				}
@@ -142,11 +141,13 @@ public class DataGridWritter {
 				System.out.println("Se ha obtenido en " + (lTimeAfter - lTimeBefore) + " milisegundos " + "la prenda "
 						+ pPrenda1.toString());
 			} else {
+				lTimeBefore = System.currentTimeMillis();
 				pPrenda1 = calculoPrenda(sId);
 
+				listaPrendas.add(pPrenda1);
 				// Pongo la prenda en la caché
-				lTimeBefore = System.currentTimeMillis();
 				cache.put(sId, pPrenda1);
+				cache.put(prendasKey, listaPrendas);
 				lTimeAfter = System.currentTimeMillis();
 
 				// Traza de prenda enviada a la caché
@@ -217,7 +218,7 @@ public class DataGridWritter {
 
 		// Retardo de 100 Milisegundos
 		try {
-			Thread.sleep(100);
+			Thread.sleep(10);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

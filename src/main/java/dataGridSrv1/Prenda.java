@@ -53,7 +53,7 @@ public class Prenda implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("=== Prenda: " + prendaName + " ===\n");
+        StringBuilder b = new StringBuilder("= Prenda: " + prendaName + " =\n");
         b.append("Colores:\n");
         for (String color : colores) {
             b.append("- " + color + "\n");
@@ -62,6 +62,7 @@ public class Prenda implements Serializable {
     }
     public boolean equals(Prenda other)
     {
+    	System.out.println("Comparando: This.getPrendaName:" + this.getPrendaName() + ". other.getPrendaName:" + other.getPrendaName());
     	return this.getPrendaName().equals(other.getPrendaName());
     }
 }
