@@ -42,7 +42,7 @@ public class DataGridWritter {
 
 		return "<br><h1><strong>dataGridSrv1</strong></h1></br>"
 				+ "<br>Poner prendas en la caché: http://datagrid-srv1.accenture.cloud/put?parametro1=</h1></br>"
-				+ "<br>Poner prendas en la caché: http://datagrid-srv1.accenture.cloud/get?parametro1=</h1></br>";
+				+ "<br>Sacar prendas de la caché: http://datagrid-srv1.accenture.cloud/get?parametro1=</h1></br>";
 	}
 
 	/**
