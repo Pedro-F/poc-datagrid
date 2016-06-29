@@ -46,15 +46,4 @@ public class Prenda implements Serializable {
         b.append("]. #");
         return b.toString();
     }
-    
-    /**
-     * método equals propio para Prenda que compara el prendaName
-     */
-    @Override
-    public boolean equals(Object other)
-    {
-    	System.out.println(DataGridWritter.ID_TRAZA + "Comparando: This.getPrendaName:" + this.getPrendaName() + 
-    					   " <> other.getPrendaName:" + ((Prenda) other).getPrendaName());
-    	return this.getPrendaName().equals(((Prenda) other).getPrendaName());
-    }
 }
