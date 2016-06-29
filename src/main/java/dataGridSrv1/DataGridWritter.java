@@ -141,15 +141,15 @@ public class DataGridWritter {
 		long lTimeBefore, lTimeAfter;
 		String trazaPrendas = "";
 		Prenda pPrenda;
-		prendasMap = (HashMap<String, Prenda>) cache.get(PRENDAS_KEY);
 		
 		try {
 			// Inicializamos la conexión al Datagrid
 			init();
 			// Obtenemos el HashMap de prendas
 			lTimeBefore = System.currentTimeMillis();
-			
+			prendasMap = (HashMap<String, Prenda>) cache.get(PRENDAS_KEY);
 			lTimeAfter = System.currentTimeMillis();
+			
 			trazaPrendas += "<br>Se ha recuperado el HashMap de prendas en " + (lTimeAfter - lTimeBefore)
 					+ " milisegundos </br>";
 
