@@ -1,19 +1,3 @@
-/*
- * JBoss, Home of Professional Open Source
- * Copyright 2013, Red Hat, Inc. and/or its affiliates, and individual
- * contributors by the @authors tag. See the copyright.txt in the
- * distribution for a full listing of individual contributors.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package dataGridSrv1;
 
 import java.io.Serializable;
@@ -21,7 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author Martin Gencur
+ * Bean para almacenar los datos de una prenda
+ * @author Marcos García Pellitero
  */
 public class Prenda implements Serializable {
 
@@ -53,16 +38,23 @@ public class Prenda implements Serializable {
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder("= Prenda: " + prendaName + " =\n");
-        b.append("Colores:\n");
+        StringBuilder b = new StringBuilder("# Prenda: " + prendaName + " =>");
+        b.append("Colores:[");
         for (String color : colores) {
-            b.append("- " + color + "\n");
+            b.append(" - " + color);
         }
+        b.append("]. #");
         return b.toString();
     }
-    public boolean equals(Prenda other)
+    
+    /**
+     * método equals propio para Prenda que compara el prendaName
+     */
+    @Override
+    public boolean equals(Object other)
     {
-    	System.out.println("Comparando: This.getPrendaName:" + this.getPrendaName() + ". other.getPrendaName:" + other.getPrendaName());
-    	return this.getPrendaName().equals(other.getPrendaName());
+    	System.out.println(DataGridWritter.ID_TRAZA + "Comparando: This.getPrendaName:" + this.getPrendaName() + 
+    					   " <> other.getPrendaName:" + ((Prenda) other).getPrendaName());
+    	return this.getPrendaName().equals(((Prenda) other).getPrendaName());
     }
 }

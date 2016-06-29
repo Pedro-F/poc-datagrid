@@ -2,7 +2,9 @@ package dataGridSrv1;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.infinispan.client.hotrod.RemoteCache;
@@ -14,155 +16,194 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@EnableAutoConfiguration
 
 /**
- * Clase que obtiene datos de la caché JBoss. En caso de que no encuentre el
- * dato, genera uno nuevo y lo pone en la c caché para la siguiente petición
+ * Clase que pone y obtiene datos de la caché JBoss Datagrid 6.5. 
  * 
  * @author pedro.alonso.garcia
  *
  */
+@RestController
+@EnableAutoConfiguration
 public class DataGridWritter {
-
 	
-	
+	// Constantes de la clase
 	private static final String JDG_HOST = "jdg.host";
 	private static final String HOTROD_PORT = "jdg.hotrod.port";
 	private static final String PROPERTIES_FILE = "jdg.properties";
-	// private static final String JDG_USER = "jdg.user";
-	// private static final String JDG_PASSWORD = "jdg.password";
-	// private static final String msgTeamMissing = "The specified team \"%s\"
-	// does not exist, choose next operation\n";
-	// private static final String msgEnterTeamName = "Enter team name: ";
-	// private static final String initialPrompt = "Choose action:\n" +
-	// "============= \n" + "at - add a team\n"
-	// + "ap - add a player to a team\n" + "rt - remove a team\n" + "rp - remove
-	// a player from a team\n"
-	// + "p - print all teams and players\n" + "q - quit\n";
-	private static final String prendasKey = "prendas";
+	private static final String PRENDAS_KEY = "prendas";
+	public static final String ID_TRAZA = "###===>>>";
 
-	// private Console con;
+	// Variables globales
 	private RemoteCacheManager cacheManager;
 	private RemoteCache<String, Object> cache;
 
 	/**
-	 *  PUT
+	 *  Método que inserta valores en la caché
 	 * @param sParametro1
 	 * @return
 	 */
 	@RequestMapping("/put")
 	String putMethod(@RequestParam(value = "parametro1", defaultValue = "1") String sParametro1) {
-		// String home(@RequestParam(value="parametro1", defaultValue="1")
-		// String sId,
-		// @RequestParam(value="parametro2", defaultValue="1") String
-		// sParametro2) {
+		
+		//variables
+		int iParametro1;
+		HashMap<String,Prenda> prendasMap;
+		long lTimeBefore, lTimeAfter;
+		String trazaPrendas = "";
+		
 		try {
-			// TODO inicializar la Cache ¿es necesario?
+			//Inicializamos la conexión al Datagrid
 			init();
+			
 			// Inicializo el valor pasado por parámetro como int
-			int iParametro1;
-			List<Prenda> prendas;
 			try {
 				iParametro1 = Integer.parseInt(sParametro1);
 			} catch (Exception e) {
 				iParametro1 = 1;
 			}
-
-			long lTimeBefore, lTimeAfter;
-
-			prendas = (List<Prenda>) cache.get(prendasKey);
-			if (prendas ==null)
-			{
-				prendas = new ArrayList<Prenda>();
-				cache.put(prendasKey, prendas);
-			}
 			
+			prendasMap = (HashMap<String, Prenda>) cache.get(PRENDAS_KEY);
+			
+			// Si el HashMap no existe, ceamos uno nuevo
+			if (prendasMap == null)	prendasMap = new HashMap<String,Prenda>();
+			
+			// Generamos las prendas con el id secuencial del indice del for 
 			for (int i = 0; i < iParametro1; i++) {
-
+				
 				Prenda pPrenda = calculoPrenda("" + i);
-
-				if (!prendas.contains(pPrenda)) {
-					prendas.add(pPrenda);
+				
+				// Si ya existe, no la inserto
+				if (prendasMap.get("" + i) != null && pPrenda.equals(prendasMap.get("" + i))){
+					System.out.println(ID_TRAZA + "el elemento: " + i + " ya se encuentra en la caché");
+					trazaPrendas += "la prenda: " + i + " ya se encuentra en la caché"; 
 				}
-				// Pongo la prenda en la caché
-				lTimeBefore = System.currentTimeMillis();
-				cache.put(pPrenda.getPrendaName(), pPrenda);
-				lTimeAfter = System.currentTimeMillis();
+				// Genero la prenda y la pongo en la caché
+				else{
+					
+					prendasMap.put(pPrenda.getPrendaName(),pPrenda);
+					
+					// Pongo la prenda en la caché
+					lTimeBefore = System.currentTimeMillis();
+					cache.put(pPrenda.getPrendaName(), pPrenda);
+					lTimeAfter = System.currentTimeMillis();
 
-				// Traza de prenda enviada a la caché
-				System.out.println("Se ha enviado en " + (lTimeAfter - lTimeBefore) + " milisegundos " + "la prenda "
-						+ pPrenda.toString());
-
+					// Traza de prenda enviada a la caché
+					System.out.println(ID_TRAZA + "Se ha enviado en " + (lTimeAfter - lTimeBefore) + " milisegundos " + 
+									   "la prenda " + pPrenda.toString());
+					trazaPrendas += "<br>Se ha enviado en " + (lTimeAfter - lTimeBefore) + " milisegundos " + 
+							   "la prenda " + pPrenda.toString() + "</br>";
+				}
+				
 			}
 			
-			// Actualizar la lista de prendas en la caché
+			// Pongo el HashMap de prendas en la caché
 			lTimeBefore = System.currentTimeMillis();
-			cache.put(prendasKey, prendas);
+			cache.put(PRENDAS_KEY, prendasMap);
 			lTimeAfter = System.currentTimeMillis();
 
 			// Traza de prenda enviada a la caché
-			System.out.println("Se ha enviado en " + (lTimeAfter - lTimeBefore) + " milisegundos "
-					+ "la lista de prendas " + prendas.toString());
+			System.out.println(ID_TRAZA + "Se ha enviado en " + (lTimeAfter - lTimeBefore) + " milisegundos " + 
+							   "el mapa de prendas " + prendasMap.toString());
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "<br><h1><strong>dataGridSrv1</strong></h1></br>" + "<br>Finalizado con Error.</br>"
+			return "<br><h1><strong>dataGridSrv1</strong></h1></br>" + "<br>PUT Finalizado con Error.</br>"
 					+ "<br>error:\n " + e.getStackTrace().toString() + "\n\n...</br>";
 		}
 
-		return "<br><h1><strong>dataGridSrv1 Método PUT</strong></h1></br>"
-				+ "<br>Listo para obtener enviar valores a la caché.</br>" + "<br>Runing...</br>";
+		return "<br><h1><strong>dataGridSrv1 Método PUT</strong></h1></br>" + trazaPrendas +
+			   "<br>Se ha enviado la lista en " + (lTimeAfter - lTimeBefore) + " milisegundos </br>" +
+			   "<br>La lista de prendas es  " + prendasMap.toString() +
+			   "<br>Listo para enviar valores a la caché....</br>";
 	}
 
 	
-	
 	/**
-	 *   Metodo retorna valores en la cache
+	 * Metodo retorna valores de la cache
 	 * @param sId
 	 * @return
 	 */
 	@RequestMapping("/get")
 	String getMethod(@RequestParam(value = "parametro1", defaultValue = "1") String sId) {
-
+		
+		//variables
+		HashMap<String,Prenda> prendasMap;
+		long lTimeBefore, lTimeAfter;
+		String trazaPrendas = "";
+		Prenda pPrenda;
+		
 		try {
+			//Inicializamos la conexión al Datagrid
 			init();
-
-			long lTimeBefore, lTimeAfter;
-
+			// Obtenemos el HashMap de prendas
 			lTimeBefore = System.currentTimeMillis();
-			Prenda pPrenda1 = (Prenda) cache.get(sId);
-			List<Prenda> listaPrendas = (List<Prenda>) cache.get(prendasKey);
-			
+			prendasMap = (HashMap<String, Prenda>) cache.get(PRENDAS_KEY);
 			lTimeAfter = System.currentTimeMillis();
-			if (pPrenda1 != null) {
-				// Traza de prenda obtenida de la caché
-				System.out.println("Se ha obtenido en " + (lTimeAfter - lTimeBefore) + " milisegundos " + "la prenda "
-						+ pPrenda1.toString());
-			} else {
-				lTimeBefore = System.currentTimeMillis();
-				pPrenda1 = calculoPrenda(sId);
-
-				listaPrendas.add(pPrenda1);
-				// Pongo la prenda en la caché
-				cache.put(sId, pPrenda1);
-				cache.put(prendasKey, listaPrendas);
-				lTimeAfter = System.currentTimeMillis();
-
-				// Traza de prenda enviada a la caché
-				System.out.println("Se ha enviado en " + (lTimeAfter - lTimeBefore) + " milisegundos " + "la prenda "
-						+ pPrenda1.toString());
-
+			trazaPrendas += "<br>Se ha recuperado el HashMap de prendas en " + (lTimeAfter - lTimeBefore) + " milisegundos </br>";
+			
+			if(prendasMap != null){
+				if(prendasMap.get(sId) != null){
+					lTimeBefore = System.currentTimeMillis();
+					pPrenda = (Prenda) cache.get(sId);
+					lTimeAfter = System.currentTimeMillis();
+					trazaPrendas += "<br>Se ha recuperado en " + (lTimeAfter - lTimeBefore) + " milisegundos " + "la prenda " + pPrenda.toString() + "</br>";
+					// Traza de prenda obtenida de la caché
+					System.out.println(ID_TRAZA + "Se ha obtenido en " + (lTimeAfter - lTimeBefore) + " milisegundos " + 
+									   "la prenda " + pPrenda.toString());
+				}
+				else{
+					trazaPrendas += "<br>La prenda " + sId + " no existe, se calculará e insertará en la caché</br>";
+					lTimeBefore = System.currentTimeMillis();
+					pPrenda = calculoPrenda(sId);
+					// Pongo la prenda en la caché
+					cache.put(sId, pPrenda);
+					lTimeAfter = System.currentTimeMillis();
+					trazaPrendas += "<br>Se ha calculado y enviado en " + (lTimeAfter - lTimeBefore) + " milisegundos " + "la prenda " + pPrenda.toString() + "</br>";
+					
+					// Traza de prenda calculada y enviada de la caché
+					System.out.println(ID_TRAZA + "Se ha calculado y enviado en " + (lTimeAfter - lTimeBefore) + " milisegundos " + 
+									   "la prenda " + pPrenda.toString());
+					
+					//Actualizamos el HashMap de prendas y lo subimos a la caché
+					prendasMap.put(sId, pPrenda);
+					lTimeBefore = System.currentTimeMillis();
+					cache.put(PRENDAS_KEY, prendasMap);
+					lTimeAfter = System.currentTimeMillis();
+					
+					// Traza de prenda calculada y enviada de la caché
+					System.out.println(ID_TRAZA + "Se ha calculado y enviado en " + (lTimeAfter - lTimeBefore) + " milisegundos " + 
+									   "la prenda " + pPrenda.toString());
+				}
 			}
+			else{
+				trazaPrendas += "<br>El HashMap de prendas " + PRENDAS_KEY + " no existe,  generará y se calculará e insertará en la caché la prenda solicitada.</br>";
+				
+				lTimeBefore = System.currentTimeMillis();
+				pPrenda = calculoPrenda(sId);
+				// Pongo la prenda en la caché
+				cache.put(sId, pPrenda);
+				//Pongo la prenda en el HashMap y lo subo a la caché
+				prendasMap = new HashMap<String,Prenda>();
+				prendasMap.put(sId, pPrenda);
+				cache.put(PRENDAS_KEY, pPrenda);
+				lTimeAfter = System.currentTimeMillis();
+				trazaPrendas += "<br>Se ha calculado, enviado y generado el HashMap en " + (lTimeAfter - lTimeBefore) + " milisegundos " + "la prenda " + pPrenda.toString() + "</br>";
+				
+				// Traza de prenda calculada y enviada, y hashmap creado y enviado a la caché
+				System.out.println(ID_TRAZA + "Se ha creado el hasmap e insertado la prenda en  " + (lTimeAfter - lTimeBefore) + " milisegundos " + 
+								   "la prenda es " + pPrenda.toString());
+			}
+			
+			
 			return "<br><h1><strong>dataGridSrv1</strong></h1></br>"
-			+ "<br>Datos de la cache.</br>"
-			+ "<br>Prenda: " + pPrenda1.toString() + "</br>"
-			+ "<br>Lista Prendas: " + listaPrendas.toString() + "</br>";
+			+ "<br>Datos de la cache.</br>" + trazaPrendas
+			+ "<br>Prenda: " + pPrenda.toString() + "</br>"
+			+ "<br>Lista Prendas: " + prendasMap.toString() + "</br>";
 
 		} catch (Exception e) {
 			e.printStackTrace();
-			return "<br><h1><strong>dataGridSrv1</strong></h1></br>" + "<br>Finalizado con Error.</br>"
+			return "<br><h1><strong>dataGridSrv1</strong></h1></br>" + "<br>GET Finalizado con Error.</br>"
 					+ "<br>error:\n " + e.getStackTrace().toString() + "\n\n...</br>";
 		}
 
@@ -173,23 +214,23 @@ public class DataGridWritter {
 		try {
 			ConfigurationBuilder builder = new ConfigurationBuilder();
 			builder.addServer().host(jdgProperty(JDG_HOST)).port(Integer.parseInt(jdgProperty(HOTROD_PORT)));
-			System.out.println(
-					"\n\n\n\n\nConectando a host : " + jdgProperty(JDG_HOST) + ", puerto: " + jdgProperty(HOTROD_PORT));
+			System.out.println("###===>>> Conectando a host : " + jdgProperty(JDG_HOST) + ", puerto: " + jdgProperty(HOTROD_PORT));
 			cacheManager = new RemoteCacheManager(builder.build());
-			System.out.println("cacheManager : " + cacheManager.toString());
 			cache = cacheManager.getCache("prendas");
-			System.out.println("Obtenida Cache");
-
-			// TODO Inicializo la caché con datos ===> ¿es necesario?
-			if (!cache.containsKey(prendasKey)) {
-				List<String> prendas = new ArrayList<String>();
-				Prenda p = new Prenda("Pantalón");
-				p.addColor("Blanco");
-				p.addColor("Negro");
-				p.addColor("Azul");
-				cache.put(p.getPrendaName(), p);
-				prendas.add(p.getPrendaName());
-				cache.put(prendasKey, prendas);
+			
+			// Inicializo la caché con el mapa de prendas
+			if (!cache.containsKey(PRENDAS_KEY)) {
+				Map<String,Prenda> prendasMap = new HashMap<String,Prenda>();
+				
+				// aniado una prenda de prueba ==> Descomentar el código para no empezar con el HashMap vacio
+//				Prenda prenda = new Prenda("Camisa");
+//				prenda.addColor("Blanco");
+//				prenda.addColor("Negro");
+//				prenda.addColor("Azul");
+//				cache.put(prenda.getPrendaName(), prenda);
+//				prendasMap.put(prenda.getPrendaName(),prenda);
+				
+				cache.put(PRENDAS_KEY, prendasMap);
 			}
 		} catch (Exception e) {
 			System.out.println("Init Caught: " + e);
@@ -218,7 +259,7 @@ public class DataGridWritter {
 
 		// Retardo de 100 Milisegundos
 		try {
-			Thread.sleep(10);
+			Thread.sleep(5);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
