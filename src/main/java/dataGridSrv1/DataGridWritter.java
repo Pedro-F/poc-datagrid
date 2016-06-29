@@ -198,7 +198,6 @@ public class DataGridWritter {
 			return "<br><h1><strong>dataGridSrv1</strong></h1></br>" + "<br>GET Finalizado con Error.</br>"
 					+ "<br>error:\n " + e.getStackTrace().toString() + "\n\n...</br>";
 		}
-
 	}
 
 	private void init() throws Exception {
