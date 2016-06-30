@@ -126,8 +126,11 @@ public class DataGridWritter {
 			// Traza 
 			System.out.println(ID_TRAZA + "GET del HashMap en " + timeGetCacheListas + " milisegundos");
 			System.out.println(ID_TRAZA + "Media de GET de prenda " + (timeGetCacheData/iParametro1) + " milisegundos (" + sParametro1 + " GETs realizados en " + timeGetCacheData + " milisegundos");
-			System.out.println(ID_TRAZA + "Media de PUT de prenda " + (timePutCacheData/contadorPuts) + " milisegundos (" + contadorPuts + " PUTs realizados en " + timePutCacheData + " milisegundos");
-			System.out.println(ID_TRAZA + "PUT del HashMap en " + (lTimeAfter - lTimeBefore) + " milisegundos");
+			if (contadorPuts > 0){
+				System.out.println(ID_TRAZA + "Media de PUT de prenda " + (timePutCacheData/contadorPuts) + " milisegundos (" + contadorPuts + " PUTs realizados en " + timePutCacheData + " milisegundos");
+				System.out.println(ID_TRAZA + "PUT del HashMap en " + (lTimeAfter - lTimeBefore) + " milisegundos");
+			}
+			System.out.println(ID_TRAZA + "La lista de prendas tiene  " + prendasMap.size());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -143,7 +146,7 @@ public class DataGridWritter {
 			sRetorno += "<br>Media de PUT de prenda " + (timePutCacheData/contadorPuts) + " milisegundos (" + contadorPuts + " PUTs realizados en " + timePutCacheData + " milisegundos)</br>";
 			sRetorno       += "<br>PUT del HashMap en " + (lTimeAfter - lTimeBefore) + " milisegundos</br>";
 	    }
-		sRetorno       += "<br>La lista de prendas tiene  " + prendasMap.size();
+		sRetorno       += "<br>La lista de prendas tiene  " + prendasMap.size()+ "</br>";
 		return sRetorno;
 	}
 
