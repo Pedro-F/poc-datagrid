@@ -36,7 +36,7 @@ public class DataGridWritter {
 	// Variables globales
 	private RemoteCacheManager cacheManager;
 	private RemoteCache<String, Object> cache;
-	DatagridListener listener = new DatagridListener();
+	private final static DatagridListener listener = new DatagridListener();
 
 	@RequestMapping("/")
 	String homeMethod() {
@@ -63,7 +63,10 @@ public class DataGridWritter {
 
 		try {
 			// Inicializamos la conexión al Datagrid
-			init();
+			if(!cache.containsKey(PRENDAS_KEY)){
+				init();
+			}
+			
 
 			// Inicializo el valor pasado por parámetro como int
 			try {
@@ -145,7 +148,9 @@ public class DataGridWritter {
 		
 		try {
 			// Inicializamos la conexión al Datagrid
-			init();
+			if(!cache.containsKey(PRENDAS_KEY)){
+				init();
+			}
 			// Obtenemos el HashMap de prendas
 			lTimeBefore = System.currentTimeMillis();
 			prendasMap = (HashMap<String, Prenda>) cache.get(PRENDAS_KEY);
@@ -212,8 +217,9 @@ public class DataGridWritter {
 			cache = cacheManager.getCache("prendas");
 			
 			//Añadimos el listener
+			
 			cache.addClientListener(listener);
-						
+			
 			// Inicializo la caché con el mapa de prendas
 			if (!cache.containsKey(PRENDAS_KEY)) {
 				Map<String, Prenda> prendasMap = new HashMap<String, Prenda>();
