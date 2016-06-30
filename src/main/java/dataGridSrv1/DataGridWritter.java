@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.infinispan.client.hotrod.RemoteCache;
 import org.infinispan.client.hotrod.RemoteCacheManager;
@@ -203,7 +204,7 @@ public class DataGridWritter {
 				pPrenda = calculoPrenda(sId);
 				// Pongo la prenda en la caché
 				lTimeBefore = System.currentTimeMillis();
-				cache.put(sId, pPrenda);
+				cache.put(sId, pPrenda, 2, TimeUnit.MINUTES, 1, TimeUnit.MINUTES);
 				lTimeAfter = System.currentTimeMillis();
 				// acumulo el tiempo del put y contabilizo la insercion
 				timePutCacheData += (lTimeAfter - lTimeBefore);
