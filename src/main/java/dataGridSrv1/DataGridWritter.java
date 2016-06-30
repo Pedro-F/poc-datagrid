@@ -203,7 +203,7 @@ public class DataGridWritter {
 	}
 
 	private void init() throws Exception {
-		if (cache!=null){
+		if (cache==null){
 			try {
 				ConfigurationBuilder builder = new ConfigurationBuilder();
 				builder.addServer().host(jdgProperty(JDG_HOST)).port(Integer.parseInt(jdgProperty(HOTROD_PORT)));
