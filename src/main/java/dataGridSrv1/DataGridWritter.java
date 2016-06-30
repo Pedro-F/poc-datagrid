@@ -35,7 +35,7 @@ public class DataGridWritter {
 
 	// Variables globales
 	private RemoteCacheManager cacheManager;
-	private RemoteCache<String, Object> cache;
+	private RemoteCache<String, Object> cache = null;
 	private final static DatagridListener listener = new DatagridListener();
 
 	@RequestMapping("/")
@@ -63,11 +63,8 @@ public class DataGridWritter {
 
 		try {
 			// Inicializamos la conexión al Datagrid
-			if(!cache.containsKey(PRENDAS_KEY)){
-				init();
-			}
+			init();
 			
-
 			// Inicializo el valor pasado por parámetro como int
 			try {
 				iParametro1 = Integer.parseInt(sParametro1);
@@ -148,9 +145,8 @@ public class DataGridWritter {
 		
 		try {
 			// Inicializamos la conexión al Datagrid
-			if(!cache.containsKey(PRENDAS_KEY)){
-				init();
-			}
+			init();
+
 			// Obtenemos el HashMap de prendas
 			lTimeBefore = System.currentTimeMillis();
 			prendasMap = (HashMap<String, Prenda>) cache.get(PRENDAS_KEY);
@@ -207,30 +203,32 @@ public class DataGridWritter {
 	}
 
 	private void init() throws Exception {
-
-		try {
-			ConfigurationBuilder builder = new ConfigurationBuilder();
-			builder.addServer().host(jdgProperty(JDG_HOST)).port(Integer.parseInt(jdgProperty(HOTROD_PORT)));
-			System.out.println(
-					"###===>>> Conectando a host : " + jdgProperty(JDG_HOST) + ", puerto: " + jdgProperty(HOTROD_PORT));
-			cacheManager = new RemoteCacheManager(builder.build());
-			cache = cacheManager.getCache("prendas");
-			
-			//Añadimos el listener
-			
-			cache.addClientListener(listener);
-			
-			// Inicializo la caché con el mapa de prendas
-			if (!cache.containsKey(PRENDAS_KEY)) {
-				Map<String, Prenda> prendasMap = new HashMap<String, Prenda>();
-				cache.put(PRENDAS_KEY, prendasMap);
+		if (cache!=null){
+			try {
+				ConfigurationBuilder builder = new ConfigurationBuilder();
+				builder.addServer().host(jdgProperty(JDG_HOST)).port(Integer.parseInt(jdgProperty(HOTROD_PORT)));
+				System.out.println(
+						"###===>>> Conectando a host : " + jdgProperty(JDG_HOST) + ", puerto: " + jdgProperty(HOTROD_PORT));
+				cacheManager = new RemoteCacheManager(builder.build());
+				cache = cacheManager.getCache("prendas");
+				
+				//Añadimos el listener
+				
+				cache.addClientListener(listener);
+				
+				// Inicializo la caché con el mapa de prendas
+				if (!cache.containsKey(PRENDAS_KEY)) {
+					Map<String, Prenda> prendasMap = new HashMap<String, Prenda>();
+					cache.put(PRENDAS_KEY, prendasMap);
+				}
 			}
-		} catch (Exception e) {
-			System.out.println("Init Caught: " + e);
-			e.printStackTrace();
-			throw e;
-
-		} 
+			catch (Exception e) {
+				System.out.println("Init Caught: " + e);
+				e.printStackTrace();
+				throw e;
+	
+			}
+		}
 	}
 
 	/**
