@@ -138,9 +138,9 @@ public class DataGridWritter {
 		
 		String sRetorno = "<br><h1><strong>dataGridSrv1 Método PUT</strong></h1></br>";
 		sRetorno       += "<br>GET del HashMap en " + timeGetCacheListas + " milisegundos</br>";
-		sRetorno       += "<br>Media de GET de prenda " + (timeGetCacheData/iParametro1) + " milisegundos (" + sParametro1 + " GETs realizados en " + timeGetCacheData + " milisegundos</br>";
-		if (contadorPuts == 0){
-			sRetorno += "<br>Media de PUT de prenda " + (timePutCacheData/contadorPuts) + " milisegundos (" + contadorPuts + " PUTs realizados en " + timePutCacheData + " milisegundos</br>";
+		sRetorno       += "<br>Media de GET de prenda " + (timeGetCacheData/iParametro1) + " milisegundos (" + sParametro1 + " GETs realizados en " + timeGetCacheData + " milisegundos)</br>";
+		if (contadorPuts > 0){
+			sRetorno += "<br>Media de PUT de prenda " + (timePutCacheData/contadorPuts) + " milisegundos (" + contadorPuts + " PUTs realizados en " + timePutCacheData + " milisegundos)</br>";
 			sRetorno       += "<br>PUT del HashMap en " + (lTimeAfter - lTimeBefore) + " milisegundos</br>";
 	    }
 		sRetorno       += "<br>La lista de prendas tiene  " + prendasMap.size();
