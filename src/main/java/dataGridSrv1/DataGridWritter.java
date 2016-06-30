@@ -135,12 +135,14 @@ public class DataGridWritter {
 					+ "<br>error:\n " + e.getStackTrace().toString() + "\n\n...</br>";
 		}
 
-		return "<br><h1><strong>dataGridSrv1 Método PUT</strong></h1></br>" +
-			   "<br>GET del HashMap en " + (lTimeAfter - lTimeBefore) + " milisegundos</br>" +
-			   "<br>Media de GET de prenda " + (lTimeAfter - lTimeBefore) + " milisegundos (" + sParametro1 + " GETs realizados</br>" +
-			   "<br>Media de PUT de prenda " + (lTimeAfter - lTimeBefore) + " milisegundos (" + contadorPuts + " PUTs realizados</br>" +
-			   "<br>PUT del HashMap en " + (lTimeAfter - lTimeBefore) + " milisegundos</br>" +
-			   "<br>La lista de prendas tiene  " + prendasMap.size();
+		
+		String sRetorno = "<br><h1><strong>dataGridSrv1 Método PUT</strong></h1></br>" +
+						  "<br>GET del HashMap en " + timeGetCacheListas + " milisegundos</br>" +
+						  "<br>Media de GET de prenda " + (timeGetCacheData/iParametro1) + " milisegundos (" + sParametro1 + " GETs realizados en " + timeGetCacheData + " milisegundos</br>" +
+						  "<br>Media de PUT de prenda " + (timePutCacheData/contadorPuts) + " milisegundos (" + contadorPuts + " PUTs realizados en " + timePutCacheData + " milisegundos</br>" +
+						  "<br>PUT del HashMap en " + (lTimeAfter - lTimeBefore) + " milisegundos</br>" +
+						  "<br>La lista de prendas tiene  " + prendasMap.size();
+		return sRetorno;
 	}
 
 	/**
@@ -217,8 +219,8 @@ public class DataGridWritter {
 		
 		String sRetorno = "<br><h1><strong>dataGridSrv1</strong></h1></br>" + "<br>Datos de la cache.</br>";
 		sRetorno += "<br>GET del HashMap en " + (lTimeAfter - lTimeBefore) + " milisegundos</br>";
-		sRetorno += "<br>Media de GET de prenda " + (lTimeAfter - lTimeBefore) + " milisegundos (" + sId + " GETs realizados</br>";
-		if (!bSoloGet){sRetorno += "<br>Media de PUT de prenda " + (lTimeAfter - lTimeBefore) + " milisegundos</br>";} 
+		sRetorno += "<br>GET de prenda " + (lTimeAfter - lTimeBefore) + " milisegundos</br>";
+		if (!bSoloGet){sRetorno += "<br>PUT de prenda " + (lTimeAfter - lTimeBefore) + " milisegundos</br>";} 
 		if (!bSoloGet){sRetorno += "<br>PUT del HashMap en " + (lTimeAfter - lTimeBefore) + " milisegundos</br>";} 
 		sRetorno += "<br>La lista de prendas tiene  " + prendasMap.size();
 		
