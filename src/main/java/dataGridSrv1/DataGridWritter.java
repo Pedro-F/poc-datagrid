@@ -213,8 +213,7 @@ public class DataGridWritter {
 			
 			//Añadimos el listener
 			cache.addClientListener(listener);
-			
-			
+						
 			// Inicializo la caché con el mapa de prendas
 			if (!cache.containsKey(PRENDAS_KEY)) {
 				Map<String, Prenda> prendasMap = new HashMap<String, Prenda>();
