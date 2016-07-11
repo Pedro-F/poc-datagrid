@@ -205,6 +205,7 @@ public class DataGridWritter {
 				// Pongo la prenda en la caché
 				lTimeBefore = System.currentTimeMillis();
 				//cache.put(sId, pPrenda);
+				// Ponemos lifespan y max idle
 				cache.put(sId, pPrenda, 2, TimeUnit.MINUTES, 1, TimeUnit.MINUTES);
 				
 				lTimeAfter = System.currentTimeMillis();
